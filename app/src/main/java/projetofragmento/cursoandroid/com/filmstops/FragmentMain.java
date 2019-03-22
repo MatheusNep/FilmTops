@@ -73,22 +73,15 @@ public class FragmentMain extends Fragment {
         FilmTask task = new FilmTask();
         task.execute();
 
-
         String[] dados = {};
         List<String> dadosList = new ArrayList<>(Arrays.asList(dados));
 
         dadosAdapter = new ArrayAdapter(getActivity(), R.layout.list_iten_film, R.id.im_post_list, dadosList);
 
-
-
-
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
 
-
-       ListView listView = rootview.findViewById(R.id.lv_main);
+        ListView listView = rootview.findViewById(R.id.lv_main);
         listView.setAdapter(dadosAdapter);
-
-
 
         return rootview;
     }
@@ -96,6 +89,7 @@ public class FragmentMain extends Fragment {
     public class FilmTask extends AsyncTask<Void, Void, ArrayList<Filme>> {
         private final String LOG_TAG = FilmTask.class.getSimpleName();
         public ArrayList<Filme> arrayList =  new ArrayList();
+        final String OWM_IMG = "https://image.tmdb.org/t/p/w500/";
 
         private ArrayList getDataFromJson(String jsonStr)
                 throws JSONException {
@@ -108,9 +102,6 @@ public class FragmentMain extends Fragment {
             final String OWM_VOTE = "vote_count";
             final String OWM_POP = "popularity";
             final String OWM_OVER = "overview";
-            final String OWM_IMG = "https://image.tmdb.org/t/p/w500/";
-
-            //(https://image.tmdb.org/t/p/w500/) link para a imagem.
 
             JSONObject forecastJson = new JSONObject(jsonStr);
             JSONArray filmArray = forecastJson.getJSONArray(OWM_COMP);
@@ -119,8 +110,8 @@ public class FragmentMain extends Fragment {
 
                 JSONObject dayForecast = filmArray.getJSONObject(i);
                 Log.i("alomarciano", dayForecast.getString(OWM_TITLE));
-                ImageView imageView = new ImageView(getActivity());
-                Picasso.get().load("https://image.tmdb.org/t/p/w500/"+dayForecast.getString(OWM_POSTER)).into(imageView);
+
+                //Picasso.get().load("https://image.tmdb.org/t/p/w500/"+dayForecast.getString(OWM_POSTER)).into(imageView);
 
                 filme.setTitle(dayForecast.getString(OWM_TITLE));
                 filme.setUrlPoster(dayForecast.getString(OWM_POSTER));
@@ -128,13 +119,10 @@ public class FragmentMain extends Fragment {
                 filme.setVoteCount(dayForecast.getLong(OWM_VOTE));
                 filme.setPopularity(dayForecast.getDouble(OWM_POP));
                 filme.setOverview(dayForecast.getString(OWM_OVER));
-                filme.setPoster(imageView);
 
                 Log.i("alomarciano", filme.getTitle());
 
                 arrayList.add(filme);
-
-
             }
 
             for (Filme s : arrayList) {
@@ -144,14 +132,11 @@ public class FragmentMain extends Fragment {
 
         }
 
-
         @Override
         protected ArrayList doInBackground(Void... voids) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String jsonStr = null;
-
-
 
             try {
                 final String base = "http://api.themoviedb.org/3/movie/now_playing?";
@@ -228,12 +213,20 @@ public class FragmentMain extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Filme> strings) {
 
+            for (int i = 0; i < strings.size(); i++) {
+                ImageView imageView = new ImageView(getActivity());
+                Picasso.get().load(OWM_IMG+strings.get(i).getUrlPoster()).into(imageView);
+//                Log.d("abestado", "" + i);
+                strings.get(i).setPoster(imageView);
+                Log.i("alomarciano", String.valueOf(i));
+
+            }
+
             if(strings != null) {
                 dadosAdapter.clear();
                 for (int i = 0; i < strings.size(); i++) {
-                    dadosAdapter.addAll(strings.get(i).getPoster());
-                    Log.i("alomarciano", String.valueOf(i));
-
+                    dadosAdapter.add(strings.get(i).getPoster());
+                    Log.i("alomarciano", String.valueOf(strings.get(i).getPoster().getScaleType()));
                 }
             }
         }
