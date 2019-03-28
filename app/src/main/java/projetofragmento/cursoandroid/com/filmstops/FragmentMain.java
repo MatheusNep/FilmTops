@@ -1,7 +1,7 @@
 package projetofragmento.cursoandroid.com.filmstops;
 
-import android.graphics.drawable.Drawable;
-import android.media.Image;
+
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,16 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-
-import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 
 public class FragmentMain extends Fragment {
     private ArrayAdapter<Filme> dadosAdapter;
@@ -46,6 +41,7 @@ public class FragmentMain extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -80,7 +76,19 @@ public class FragmentMain extends Fragment {
         task.execute();
 
         listView.setAdapter(dadosAdapter);
-        
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra("title", dadosAdapter.getItem(position).getTitle());
+                intent.putExtra("url", dadosAdapter.getItem(position).getUrlPoster());
+                intent.putExtra("overview", dadosAdapter.getItem(position).getOverview());
+                intent.putExtra("popularity", dadosAdapter.getItem(position).getPopularity());
+                intent.putExtra("votes", dadosAdapter.getItem(position).getVoteCount());
+                startActivity(intent);
+            }
+        });
+
 
         return rootview;
     }
@@ -114,9 +122,6 @@ public class FragmentMain extends Fragment {
                 filme.setVoteCount(dayForecast.getLong(OWM_VOTE));
                 filme.setPopularity(dayForecast.getDouble(OWM_POP));
                 filme.setOverview(dayForecast.getString(OWM_OVER));
-
-                Log.i("alomarciano", filme.getTitle());
-
                 arrayList.add(filme);
             }
 
@@ -207,12 +212,6 @@ public class FragmentMain extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<Filme> strings) {
-            for (int i = 0; i < strings.size(); i++) {
-
-                Log.i("abestado", strings.get(i).getTitle());
-
-            }
-
             if(strings != null) {
                 dadosAdapter.clear();
                 for (int i = 0; i < strings.size(); i++) {
