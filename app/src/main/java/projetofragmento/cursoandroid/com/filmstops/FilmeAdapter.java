@@ -27,7 +27,6 @@ public class FilmeAdapter extends ArrayAdapter<Filme> {
 
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
        View view = convertView;
@@ -35,17 +34,15 @@ public class FilmeAdapter extends ArrayAdapter<Filme> {
         if (view == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 
-            view = inflater.inflate(R.layout.fragment_main,parent, false);
+            view = inflater.inflate(R.layout.list_iten_film,parent, false);
         }
         if (filme.size()>0){
-            ImageView imageView = view.findViewById(R.id.im_post_list);
+            ImageView imageView = view.findViewById(R.id.iv_filmes);
             Filme filmeObject = filme.get(position);
-
-//            imageView.setImageURI(Uri.parse("https://image.tmdb.org/t/p/w500/"+filmeObject.getUrlPoster()));
-//            //parseObject.getParseFile("image");
-//            Picasso.with(context).load().getUrl().fit().into(imageView);
+            Log.i("123", ""+filmeObject.getUrlPoster());
             Picasso.get().load("https://image.tmdb.org/t/p/w500/"+filmeObject.getUrlPoster()).into(imageView);
-            Log.i("alomarciano2", filmeObject.toString());
+
+
         }
         return view;
 

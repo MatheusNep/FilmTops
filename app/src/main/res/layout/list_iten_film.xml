@@ -6,11 +6,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:id="@+id/im_post_list"
+            android:id="@+id/iv_filmes"
             android:scaleType="fitCenter"
             android:padding="8dp"/>
     </LinearLayout>

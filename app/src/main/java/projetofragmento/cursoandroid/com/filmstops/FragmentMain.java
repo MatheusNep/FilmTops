@@ -35,8 +35,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FragmentMain extends Fragment {
-    private ArrayAdapter dadosAdapter;
-    private ImageView imageView;
+    private ArrayAdapter<Filme> dadosAdapter;
+    private ListView listView;
+
 
     public FragmentMain() {
     }
@@ -70,18 +71,16 @@ public class FragmentMain extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        FilmTask task = new FilmTask();
-        task.execute();
-
-        String[] dados = {};
-        List<String> dadosList = new ArrayList<>(Arrays.asList(dados));
-
-        dadosAdapter = new ArrayAdapter(getActivity(), R.layout.list_iten_film, R.id.im_post_list, dadosList);
-
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ListView listView = rootview.findViewById(R.id.lv_main);
+       listView = rootview.findViewById(R.id.lv_main);
+
+        FilmTask task = new FilmTask();
+        dadosAdapter = new FilmeAdapter(getActivity(), new ArrayList<Filme>());
+        task.execute();
+
         listView.setAdapter(dadosAdapter);
+        
 
         return rootview;
     }
@@ -89,11 +88,10 @@ public class FragmentMain extends Fragment {
     public class FilmTask extends AsyncTask<Void, Void, ArrayList<Filme>> {
         private final String LOG_TAG = FilmTask.class.getSimpleName();
         public ArrayList<Filme> arrayList =  new ArrayList();
-        final String OWM_IMG = "https://image.tmdb.org/t/p/w500/";
 
         private ArrayList getDataFromJson(String jsonStr)
                 throws JSONException {
-            Filme filme = new Filme();
+
             // These are the names of the JSON objects that need to be extracted.
             final String OWM_COMP = "results";
             final String OWM_TITLE = "title";
@@ -109,10 +107,7 @@ public class FragmentMain extends Fragment {
             for(int i = 0; i < filmArray.length(); i++) {
 
                 JSONObject dayForecast = filmArray.getJSONObject(i);
-                Log.i("alomarciano", dayForecast.getString(OWM_TITLE));
-
-                //Picasso.get().load("https://image.tmdb.org/t/p/w500/"+dayForecast.getString(OWM_POSTER)).into(imageView);
-
+                Filme filme = new Filme();
                 filme.setTitle(dayForecast.getString(OWM_TITLE));
                 filme.setUrlPoster(dayForecast.getString(OWM_POSTER));
                 filme.setId(dayForecast.getInt(OWM_ID));
@@ -212,21 +207,16 @@ public class FragmentMain extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<Filme> strings) {
-
             for (int i = 0; i < strings.size(); i++) {
-                ImageView imageView = new ImageView(getActivity());
-                Picasso.get().load(OWM_IMG+strings.get(i).getUrlPoster()).into(imageView);
-//                Log.d("abestado", "" + i);
-                strings.get(i).setPoster(imageView);
-                Log.i("alomarciano", String.valueOf(i));
+
+                Log.i("abestado", strings.get(i).getTitle());
 
             }
 
             if(strings != null) {
                 dadosAdapter.clear();
                 for (int i = 0; i < strings.size(); i++) {
-                    dadosAdapter.add(strings.get(i).getPoster());
-                    Log.i("alomarciano", String.valueOf(strings.get(i).getPoster().getScaleType()));
+                    dadosAdapter.add(strings.get(i));
                 }
             }
         }
